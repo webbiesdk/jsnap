@@ -22,7 +22,7 @@ function jsnap(options) {
     options.files.forEach(function (file) {
         chunks.push(fs.readFileSync(file, 'utf8'))
     })
-    var instrumentedCode = instrument(chunks.join('\n'), {runtime: runtime})
+    var instrumentedCode = instrument(chunks.join('\n'), {runtime: runtime, createInstances: options.createInstances})
 
     var tempFilePath;
     if (options.tmp) {
@@ -52,6 +52,7 @@ module.exports = jsnap
 function main() {
     program.version('0.1')
         .option('--runtime [node|browser]', 'Runtime environment to use (default: browser)', String, 'browser')
+        .option('--createInstances', 'Create an instance of every user of bind functions using \"new\"')
         .option('--tmp [FILE]', 'Use the given file as temporary')
         .parse(process.argv)
 
@@ -59,8 +60,9 @@ function main() {
         runtime: program.runtime,
         tmp: program.tmp,
         stdio: ['ignore', 1, 2],
-        files: program.args
-    }
+        files: program.args,
+        createInstances: program.createInstances
+    };
     var subproc = jsnap(options)
     subproc.on('error', function(e) {
         console.error(e)
