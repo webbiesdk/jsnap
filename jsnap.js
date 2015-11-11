@@ -24,6 +24,11 @@ function jsnap(options) {
     })
     var instrumentedCode = instrument(chunks.join('\n'), {runtime: runtime, createInstances: options.createInstances})
 
+    if (options.onlyInstrument) {
+        console.log(instrumentedCode);
+        return;
+    }
+
     var tempFilePath;
     if (options.tmp) {
         fs.writeFileSync(options.tmp, instrumentedCode)
@@ -53,6 +58,7 @@ function main() {
     program.version('0.1')
         .option('--runtime [node|browser]', 'Runtime environment to use (default: browser)', String, 'browser')
         .option('--createInstances', 'Create an instance of every user of bind functions using \"new\"')
+        .option('--onlyInstrument', 'Prints the instrumented code, without running it')
         .option('--tmp [FILE]', 'Use the given file as temporary')
         .parse(process.argv)
 
@@ -61,12 +67,15 @@ function main() {
         tmp: program.tmp,
         stdio: ['ignore', 1, 2],
         files: program.args,
-        createInstances: program.createInstances
+        createInstances: program.createInstances,
+        onlyInstrument: program.onlyInstrument
     };
     var subproc = jsnap(options)
-    subproc.on('error', function(e) {
-        console.error(e)
-    })
+    if (!options.onlyInstrument) {
+        subproc.on('error', function(e) {
+            console.error(e);
+        })
+    }
 }
 
 
