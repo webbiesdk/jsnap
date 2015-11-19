@@ -24,7 +24,14 @@ function jsnap(options) {
     })
     var instrumentedCode = instrument(chunks.join('\n'), {runtime: runtime, createInstances: options.createInstances})
 
-    if (options.onlyInstrument) {
+    var dependencies = "";
+    for (var i = 0; i < options.dependencies.length; i++) {
+        dependencies += fs.readFileSync(options.dependencies[i], "utf8");
+    }
+
+    instrumentedCode = dependencies + instrumentedCode;
+
+    if (options.onlyInstrument || true) {
         console.log(instrumentedCode);
         return;
     }
@@ -55,10 +62,16 @@ module.exports = jsnap
 
 
 function main() {
+    var dependencies = [];
+    function collect(val) {
+        dependencies.push(val);
+    }
+
     program.version('0.1')
         .option('--runtime [node|browser]', 'Runtime environment to use (default: browser)', String, 'browser')
         .option('--createInstances', 'Create an instance of every user of bind functions using \"new\"')
         .option('--onlyInstrument', 'Prints the instrumented code, without running it')
+        .option('--dependency [file]', 'Add a dependency, that is executed before the instrumented code', collect)
         .option('--tmp [FILE]', 'Use the given file as temporary')
         .parse(process.argv)
 
@@ -68,7 +81,8 @@ function main() {
         stdio: ['ignore', 1, 2],
         files: program.args,
         createInstances: program.createInstances,
-        onlyInstrument: program.onlyInstrument
+        onlyInstrument: program.onlyInstrument,
+        dependencies: dependencies
     };
     var subproc = jsnap(options)
     if (!options.onlyInstrument) {
