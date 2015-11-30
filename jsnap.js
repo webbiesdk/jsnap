@@ -22,7 +22,7 @@ function jsnap(options) {
     options.files.forEach(function (file) {
         chunks.push(fs.readFileSync(file, 'utf8'))
     })
-    var instrumentedCode = instrument(chunks.join('\n'), {runtime: runtime, createInstances: options.createInstances})
+    var instrumentedCode = instrument(chunks.join('\n'), {runtime: runtime, createInstances: options.createInstances, createInstancesClassFilter: options.createInstancesClassFilter})
 
     var dependencies = "";
     for (var i = 0; i < options.dependencies.length; i++) {
@@ -70,6 +70,7 @@ function main() {
     program.version('0.1')
         .option('--runtime [node|browser]', 'Runtime environment to use (default: browser)', String, 'browser')
         .option('--createInstances', 'Create an instance of every user of bind functions using \"new\"')
+        .option('--createInstancesClassFilter', 'Only creates instances for the functions that \"look\" like a class')
         .option('--onlyInstrument', 'Prints the instrumented code, without running it')
         .option('--dependency [file]', 'Add a dependency, that is executed before the instrumented code', collect)
         .option('--tmp [FILE]', 'Use the given file as temporary')
@@ -81,6 +82,7 @@ function main() {
         stdio: ['ignore', 1, 2],
         files: program.args,
         createInstances: program.createInstances,
+        createInstancesClassFilter: program.createInstancesClassFilter,
         onlyInstrument: program.onlyInstrument,
         dependencies: dependencies
     };
