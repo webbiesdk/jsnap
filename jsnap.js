@@ -31,7 +31,7 @@ function jsnap(options) {
 
     instrumentedCode = dependencies + instrumentedCode;
 
-    if (options.onlyInstrument || true) {
+    if (options.onlyInstrument) {
         console.log(instrumentedCode);
         return;
     }
