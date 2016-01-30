@@ -22,7 +22,7 @@ function jsnap(options) {
     options.files.forEach(function (file) {
         chunks.push(fs.readFileSync(file, 'utf8'))
     })
-    var instrumentedCode = instrument(chunks.join('\n'), {runtime: runtime, createInstances: options.createInstances, createInstancesClassFilter: options.createInstancesClassFilter})
+    var instrumentedCode = instrument(chunks.join('\n'), {runtime: runtime, recordCalls: options.recordCalls, startDump: options.startDump, callback: options.callback, createInstances: options.createInstances, createInstancesClassFilter: options.createInstancesClassFilter})
 
     var dependencies = "";
     for (var i = 0; i < options.dependencies.length; i++) {
@@ -72,6 +72,9 @@ function main() {
         .option('--createInstances', 'Create an instance of every user of bind functions using \"new\"')
         .option('--createInstancesClassFilter', 'Only creates instances for the functions that \"look\" like a class')
         .option('--onlyInstrument', 'Prints the instrumented code, without running it')
+        .option('--recordCalls', 'Prints the instrumented code, without running it')
+        .option('--callback [function]', 'Instead of printing out the result in the console, run a globally defined callback with the resulting JSON.', String, null)
+        .option('--startDump [function]', 'If set, this function is called, with an argument, when the argument is called, the heap is dumped.', String, null)
         .option('--dependency [file]', 'Add a dependency, that is executed before the instrumented code', collect)
         .option('--tmp [FILE]', 'Use the given file as temporary')
         .parse(process.argv)
@@ -83,8 +86,11 @@ function main() {
         files: program.args,
         createInstances: program.createInstances,
         createInstancesClassFilter: program.createInstancesClassFilter,
+        recordCalls: program.recordCalls,
         onlyInstrument: program.onlyInstrument,
-        dependencies: dependencies
+        dependencies: dependencies,
+        callback: program.callback,
+        startDump: program.startDump
     };
     var subproc = jsnap(options)
     if (!options.onlyInstrument) {
