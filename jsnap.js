@@ -72,7 +72,7 @@ function main() {
         .option('--createInstances', 'Create an instance of every user of bind functions using \"new\"')
         .option('--createInstancesClassFilter', 'Only creates instances for the functions that \"look\" like a class')
         .option('--onlyInstrument', 'Prints the instrumented code, without running it')
-        .option('--recordCalls', 'Prints the instrumented code, without running it')
+        .option('--recordCalls', 'Records the values of arguments and returns for every function call. ')
         .option('--callback [function]', 'Instead of printing out the result in the console, run a globally defined callback with the resulting JSON.', String, null)
         .option('--startDump [function]', 'If set, this function is called, with an argument, when the argument is called, the heap is dumped.', String, null)
         .option('--dependency [file]', 'Add a dependency, that is executed before the instrumented code', collect)
