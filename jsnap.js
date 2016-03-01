@@ -25,8 +25,10 @@ function jsnap(options) {
     var instrumentedCode = instrument(chunks.join('\n'), {runtime: runtime, recordCalls: options.recordCalls, startDump: options.startDump, callback: options.callback, createInstances: options.createInstances, createInstancesClassFilter: options.createInstancesClassFilter})
 
     var dependencies = "";
-    for (var i = 0; i < options.dependencies.length; i++) {
-        dependencies += fs.readFileSync(options.dependencies[i], "utf8");
+    if (options.dependencies) {
+        for (var i = 0; i < options.dependencies.length; i++) {
+            dependencies += fs.readFileSync(options.dependencies[i], "utf8");
+        }
     }
 
     instrumentedCode = dependencies + instrumentedCode;
