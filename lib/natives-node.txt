@@ -283,8 +283,8 @@ RegExp.lastMatch#get
 RegExp.lastMatch#set
 RegExp.lastParen#get
 RegExp.leftContext#get
-RegExp.multiline#get
-RegExp.multiline#set
+RegExp.prototype.multiline#get
+RegExp.prototype.multiline#set
 RegExp.prototype.compile
 RegExp.prototype.exec
 RegExp.prototype.test
